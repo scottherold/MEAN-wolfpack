@@ -9,7 +9,7 @@ const app = express(); // constructors express server
 
 // <--- Server Settings --->
 app.set('view engine', 'ejs'); // sets templating engine to ejs
-app.set('views', __dirname + '/views'); // maps views dir
+app.set('views', __dirname + '/client/views'); // maps views dir
 app.use(express.urlencoded({extended: true})); // allows POST routes
 // ** Sessions Settings **
 app.use(session({
