@@ -1,56 +1,50 @@
 // This module handles the 'wolves' controller functions
 // <--- Modules --->
-const Wolf = require('mongoose').model('Wolf');
+const Wolf = require('mongoose').model('Wolf'); // Wolf Model
 
 // <--- Controller Functions --->
 module.exports = {
-    index: (req, res) => {
-        Wolf.find() // Query MongoDB w/ mongoose for all wolves
-            .then(data => res.render('index', {wolves: data})) // bind queried data to view
-            .catch(err => res.json(err)); // list error in JSON
-    },
-    new: (req, res) => {
-        res.render('new');
-    },
-    show: (req, res) => {
-        Wolf.findOne({_id: req.params.id}) // Query DB for single wolf based on path variable
-            .then(data => res.render('show', {wolf: data}))
-            .catch(err => req.json(err));
-    },
-    edit: (req, res) => {
-        Wolf.findOne({_id: req.params.id}) // Query DB for single wolf based on path variable
-            .then(data => res.render('edit', {wolf: data}))
-            .catch(err => req.json(err));
-    },
-    create: (req, res) => {
-        const wolf = new Wolf(req.body); // constructs new wolf object using form data;
-        wolf.save() // save to DB
-            .then( () => res.redirect('/')) // on successful save, redirect to root
+    all(req, res) {
+        // all
+        Wolf.find()
+            .then(wolves => res.json(wolves)) // send data to client via JSON
             .catch(err => {
-                for (var key in err.errors) {
-                    req.flash('formErrors', err.errors[key].message); // add error to formErrors
-                }
-                res.redirect('/wolves/new');
+                console.log(err); 
+                res.status(400).json(err)
             });
     },
-    update: (req, res) => {
+    show(req, res) {
+        // display one Wolf by _id
+        Wolf.findById(req.params.id) // Query DB for single wolf based on path variable
+            .then(wolf => res.json(wolf))
+            .catch(err => {
+                console.log(err); 
+                res.status(400).json(err);
+            });
+    },
+    create(req, res) {
+        Wolf.create(req.body) // save to DB
+            .then(wolf => res.json(wolf))
+            .catch(err => {
+                console.log(err); 
+                res.status(400).json(err)
+            });
+    },
+    update(req, res) {
         // Update a single instance in the DB
-        Wolf.updateOne({_id: req.params.id}, {
-            name: req.body.name,
-            role: req.body.role,
-            age: req.body.age
-        }, {runValidators: true}) // Run validators on update query
-        .then(result => res.redirect('/')) // redirect to show with updated data
+        Wolf.findByIdAndUpdate(req.params.id, req.body, {runValidators: true}) // Run validators on update query
+        .then(wolf => res.json(wolf))
         .catch(err => {
-            for (var key in err.errors) {
-                req.flash('formErrors', err.errors[key].message); // add error to formerrors
-            }
-            res.redirect(`/wolves/edit/${req.params.id}`);
+            console.log(err); 
+            res.status(400).json(err)
         });
     },
-    destroy: (req, res) => {
-        Wolf.deleteOne({_id: req.params.id}) // remove wolf by id
-            .then( () => res.redirect('/')) // on successful delete, redirect to root
-            .catch(err => res.json(err));
+    destroy(req, res) {
+        Wolf.findByIdAndRemove(req.params.id) // remove wolf by id
+            .then( result => res.json(result))
+            .catch(err => {
+                console.log(err); 
+                res.status(400).json(err)
+            });
     }
 }

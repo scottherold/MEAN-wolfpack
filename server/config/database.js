@@ -1,5 +1,5 @@
 // This module constructs the database connection
-const mongoose = require('mongoose'); // imports mongose for server connection
+const mongoose = require('mongoose'); // imports mongoose for server connection
 const fs = require('fs'); // file-system so that we can load, read and require all model files
 const path = require('path'); // utilizes path for easy dir/file joining
 const modelsPath = path.resolve('server', 'models'); // Dir where models are located
@@ -35,7 +35,7 @@ process.on('SIGINT', () => {
     });
 });
 
-// <--- Model Connection
+// <--- Model Connection --->
 // read all the files in the models dir and check if it is a JS file, then require
 fs.readdirSync(modelsPath).forEach(file => {
     if(reg.test(file)) {

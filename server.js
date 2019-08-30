@@ -1,24 +1,26 @@
 // <--- Modules --->
+const compress = require('compression'); // imports compression module
+const parser = require('body-parser'); // imports body-parser module
 const express = require('express'); // imports express module
-const session = require('express-session'); // imports session
-const flash = require('express-flash'); // imports flash message
+const helmet = require('helmet'); // imports helmet module
+const logger = require('morgan'); // imports morgan module
+const path = require('path'); // imports path module (for DB validation)
+const cors = require('cors'); // imports CORS
 
 // <--- Server Constructors --->
 const port = process.env.PORT || 8000; // estbalishes port
 const app = express(); // constructors express server
 
 // <--- Server Settings --->
-app.set('view engine', 'ejs'); // sets templating engine to ejs
-app.set('views', __dirname + '/client/views'); // maps views dir
-app.use(express.urlencoded({extended: true})); // allows POST routes
-// ** Sessions Settings **
-app.use(session({
-    secret: 'wolvesKey',
-    resave: false,
-    saveUninitialized: true,
-    cookie: {maxAge: 60000}
-}));
-app.use(flash()); // flash messages
+app.set('view engine', 'ejs') // sets templating engine to ejs
+    .set('views', __dirname + '/client/views'); // maps views dir
+app.use(express.static(__dirname + '/client/static')) // points to static folder
+    .use(helmet()) // HTTP headers -- status codes
+    .use(compress()) // Compress HTTP requests
+    .use(cors()) // restricts AJAX access
+    .use(logger('dev')) // USer with helmet for error logging
+    .use(parser.json()) // for interpretting JSON data
+    .use(parser.urlencoded({extended: true})) // allows POST routes
 
 // <--- Server Config --->
 require(__dirname + '/server/config/database'); // DB Connection

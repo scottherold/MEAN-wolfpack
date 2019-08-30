@@ -1,5 +1,6 @@
 // This module handles the 'wolf' model
 // <--- Modules --->
+const uniqueValidator = require('mongoose-unique-validator'); // imports validator for unique inputs
 const mongoose = require('mongoose'); // imports mongoose for model construction
 const { Schema } = mongoose; // constructs an empty schema object from mongoose
 
@@ -14,7 +15,7 @@ const WolfSchema = new Schema({
     },
     role: {
         type: String,
-        minlength: [5, 'The minimum length for role is four characters!'],
+        minlength: [4, 'The minimum length for role is four characters!'],
         maxlength: [20, 'The maximum length for role is twenty characers!'],
         required: [true, 'Role is required!']
     },
@@ -23,6 +24,9 @@ const WolfSchema = new Schema({
         required: [true, 'Age is required!']
     }
 }, {timestamps : true});
+
+// Validator for uniqueness
+WolfSchema.plugin(uniqueValidator, { message: '{PATH} must be unique.' });
 
 // <--- Document Model --->
 module.exports = mongoose.model('Wolf', WolfSchema); // Attach schema mongoose object to create documents and chain mongoose methods, added in DB connection file
